@@ -1,3 +1,26 @@
+# File System Baseline and Output to CSV
+# Josh Jobe
+# 1 May 2024
+# Ver. 1.0
+'''
+When the script is executed, it will ask for a directory to scan and a directory to save
+the file csv file.  This is best to run on a freshly built system to have a baseline
+to compare to in the future if you suspect changes were made.  The results of the scan
+will be saved to a CSV file with the File Path, Filename, and SHA256 hash for each file.
+
+Example on a Windows System (using VS Code):
+C:\ScriptFolder> & "C:/Program Files/Python311/python.exe" c:/ScriptFolder/system_baseline.py
+Enter the root directory to scan: C:\Users\username\Documents\
+Enter the output CSV file path (including filename): C:\Users\username\Documents\document_folder_baseline.csv
+Scan completed. CSV file created and renamed to: C:\Users\username\Documents\document_folder_baseline_8e2bf9cb.csv
+
+Example on Ubuntu:
+$ python system_baseline.py 
+Enter the root directory to scan: /home/user/Documents
+Enter the output CSV file path (including filename): /home/user/Documents/documents_folder_baseline.csv
+Scan completed. CSV file created and renamed to: /home/user/Documents/documents_folder_baseline_28a51db8.csv
+'''
+
 import os
 import hashlib
 import csv
