@@ -1,25 +1,27 @@
 # File System Baseline and Output to CSV
 # Josh Jobe
 # 1 May 2024
-# Ver. 1.0
-'''
-When the script is executed, it will ask for a directory to scan and a directory to save
-the file csv file.  This is best to run on a freshly built system to have a baseline
-to compare to in the future if you suspect changes were made.  The results of the scan
-will be saved to a CSV file with the File Path, Filename, and SHA256 hash for each file.
+# Ver. 1.1
+# Minor revisions to handles errors
 
-Example on a Windows System (using VS Code):
-C:\ScriptFolder> & "C:/Program Files/Python311/python.exe" c:/ScriptFolder/system_baseline.py
-Enter the root directory to scan: C:\Users\username\Documents\
-Enter the output CSV file path (including filename): C:\Users\username\Documents\document_folder_baseline.csv
-Scan completed. CSV file created and renamed to: C:\Users\username\Documents\document_folder_baseline_8e2bf9cb.csv
+#When the script is executed, it will ask for a directory to scan and a directory to save
+#the file csv file.  This is best to run on a freshly built system to have a baseline
+#to compare to in the future if you suspect changes were made.  The results of the scan
+#will be saved to a CSV file with the File Path, Filename, and SHA256 hash for each file.
 
-Example on Ubuntu:
-$ python system_baseline.py 
-Enter the root directory to scan: /home/user/Documents
-Enter the output CSV file path (including filename): /home/user/Documents/documents_folder_baseline.csv
-Scan completed. CSV file created and renamed to: /home/user/Documents/documents_folder_baseline_28a51db8.csv
-'''
+#Example on a Windows System (using VS Code):
+#C:\ScriptFolder> & "C:/Program Files/Python311/python.exe" c:/ScriptFolder/system_baseline.py
+#Enter the root directory to scan: C:\Users\username\Documents\
+#Enter the output CSV file path (including filename): C:\Users\username\Documents\document_folder_baseline.csv
+#Scan completed. CSV file created and renamed to: C:\Users\username\Documents\document_folder_baseline_8e2bf9cb.csv
+
+#Example on Ubuntu:
+#$ python system_baseline.py 
+#Enter the root directory to scan: /home/user/Documents
+#Enter the output CSV file path (including filename): /home/user/Documents/documents_folder_baseline.csv
+#Scan completed. CSV file created and renamed to: /home/user/Documents/documents_folder_baseline_28a51db8.csv
+
+
 
 import os
 import hashlib
@@ -28,12 +30,21 @@ import csv
 def calculate_sha256(file_path):
     """Calculate SHA256 hash of a file."""
     sha256 = hashlib.sha256()
-    with open(file_path, 'rb') as f:
-        while True:
-            data = f.read(65536)  # Read in chunks of 64KB
-            if not data:
-                break
-            sha256.update(data)
+    try:
+       with open(file_path, 'rb') as f:
+           while True:
+               data = f.read(65536)  # Read in chunks of 64KB
+               if not data:
+                   break
+               sha256.update(data)
+    except FileNotFoundError:
+        # Skip the file if it's not found
+        print(f"File not found: {file_path}")
+        return None
+    except Exception as e:
+        # Handle other exceptions if needed
+        print(f"Error processing file {file_path}: {e}")
+        return None
     return sha256.hexdigest()
 
 def scan_system(root_dir):
